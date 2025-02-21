@@ -61,17 +61,24 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navbar onSearch={handleSearch} />
-      <div style={{marginTop: '64px', display:'flex',height:'calc(100vh - 64px)'}}>
+      <div style=
+        {{marginTop: '64px', 
+          display:'flex',
+          height:'calc(100vh - 64px)',
+          overflowY:'hidden'
+          }}>
       {isMenuOpen &&<Sidemenu activePage={activePage} onPageChange={handlePageChange} onClose={() => setIsChatOpen(false)} />}
       <ResponsiveIconButton onClick={toggleSideMenu}>
         {isMenuOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
       </ResponsiveIconButton>
-      {
-      activePage === 'apps' ? (
-        <AppsPage searchTerm={searchTerm} />
-      ) : (
-        <DocumentsPage searchTerm={searchTerm} />
-      )}
+      {/* Ensure content stretches fully */}
+      <div style={{ flex: 1, overflowY: 'auto' }}>
+        {activePage === 'apps' ? (
+          <AppsPage searchTerm={searchTerm} />
+        ) : (
+          <DocumentsPage searchTerm={searchTerm} />
+        )}
+      </div>
       {isChatOpen ? (
         <ChatWindow onClose={() => setIsChatOpen(false)} />
       ) : (
