@@ -3,13 +3,14 @@ import { Typography, Paper, styled } from '@mui/material';
 
 const PageContainer = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
-  marginLeft: '240px',
-  marginTop: '64px',
-  minHeight: 'calc(100vh - 64px)',
+  // marginLeft: '240px',
+  // marginTop: '64px',
+  // minHeight: 'calc(100vh - 64px)',
   backgroundColor: '#fff',
-  [theme.breakpoints.down('sm')]: {
-    marginLeft: '200px',
-  },
+  // [theme.breakpoints.down('sm')]: {
+  //   marginLeft: '200px',
+  width: '100%',
+  // },
 }));
 
 interface AppsPageProps {

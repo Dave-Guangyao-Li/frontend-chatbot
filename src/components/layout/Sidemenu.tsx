@@ -6,11 +6,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const SideMenuContainer = styled(Paper)(({ theme }) => ({
   width: '240px',
-  height: '100vh',
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  paddingTop: '64px',
+  // height: '100vh',
+  // position: 'fixed',
+  position:'relative',
+  // top: 0,
+  // left: 0,
+  // paddingTop: '64px',
   backgroundColor: '#fff',
   [theme.breakpoints.down('sm')]: {
     width: '200px',
@@ -25,24 +26,20 @@ const MenuItem = styled(ListItem)<{ active?: boolean }>(({ active }) => ({
   cursor: 'pointer',
 }));
 
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  // position: 'absolute',
-  top: '10px',
-  left: '10px',
-  zIndex: 2000,
-  [theme.breakpoints.down('sm')]: {
-    display: 'block',
-  },
-}));
+
 
 interface SidemenuProps {
   activePage: string;
   onPageChange: (page: string) => void;
+  onClose: () => void;
 }
 
-const Sidemenu: React.FC<SidemenuProps> = ({ activePage, onPageChange }) => {
+const Sidemenu: React.FC<SidemenuProps> = ({ activePage, onPageChange, onClose }) => {
   return (
     <SideMenuContainer elevation={1}>
+      {/* <CloseButton onClick={onClose}>
+        <ArrowBackIcon />
+      </CloseButton> */}
       <List>
         <MenuItem
           active={activePage === 'apps'}

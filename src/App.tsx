@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ThemeProvider, CssBaseline, IconButton } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
+import { createTheme, styled } from '@mui/material/styles';
 import Navbar from './components/layout/Navbar';
 import Sidemenu from './components/layout/Sidemenu';
 import ChatButton from './components/chatbot/ChatButton';
@@ -21,6 +21,20 @@ const theme = createTheme({
   },
 });
 
+
+const ResponsiveIconButton = styled(IconButton)(({ theme }) => ({
+  position: 'fixed',
+  top: '10px',
+  left: '200px', // default for large screens
+  zIndex: 2000,
+  backgroundColor: '#1976d2',
+  color: 'white',
+  [theme.breakpoints.down('sm')]: {
+    left: '160px',
+    top: '64px'
+  },
+}));
+
 const App: React.FC = () => {
   const [activePage, setActivePage] = useState('apps');
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,21 +53,21 @@ const App: React.FC = () => {
     setIsChatOpen(!isChatOpen);
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleSideMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navbar onSearch={handleSearch} />
-      {isMenuOpen ? (
-        <Sidemenu activePage={activePage} onPageChange={handlePageChange} />
-      ) : null}
-      <IconButton onClick={toggleMenu} style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2000 }}>
+      <div style={{marginTop: '64px', display:'flex',height:'calc(100vh - 64px)'}}>
+      {isMenuOpen &&<Sidemenu activePage={activePage} onPageChange={handlePageChange} onClose={() => setIsChatOpen(false)} />}
+      <ResponsiveIconButton onClick={toggleSideMenu}>
         {isMenuOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
-      </IconButton>
-      {activePage === 'apps' ? (
+      </ResponsiveIconButton>
+      {
+      activePage === 'apps' ? (
         <AppsPage searchTerm={searchTerm} />
       ) : (
         <DocumentsPage searchTerm={searchTerm} />
@@ -63,6 +77,10 @@ const App: React.FC = () => {
       ) : (
         <ChatButton onClick={toggleChat} />
       )}
+      </div>
+      
+      
+      
     </ThemeProvider>
   );
 };
