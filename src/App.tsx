@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, IconButton } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import Navbar from './components/layout/Navbar';
 import Sidemenu from './components/layout/Sidemenu';
@@ -7,6 +7,8 @@ import ChatButton from './components/chatbot/ChatButton';
 import ChatWindow from './components/chatbot/ChatWindow';
 import AppsPage from './pages/AppsPage';
 import DocumentsPage from './pages/DocumentsPage';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const theme = createTheme({
   palette: {
@@ -23,6 +25,7 @@ const App: React.FC = () => {
   const [activePage, setActivePage] = useState('apps');
   const [searchTerm, setSearchTerm] = useState('');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
 
   const handlePageChange = (page: string) => {
     setActivePage(page);
@@ -36,11 +39,20 @@ const App: React.FC = () => {
     setIsChatOpen(!isChatOpen);
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Navbar onSearch={handleSearch} />
-      <Sidemenu activePage={activePage} onPageChange={handlePageChange} />
+      {isMenuOpen ? (
+        <Sidemenu activePage={activePage} onPageChange={handlePageChange} />
+      ) : null}
+      <IconButton onClick={toggleMenu} style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2000 }}>
+        {isMenuOpen ? <ArrowBackIcon /> : <ArrowForwardIcon />}
+      </IconButton>
       {activePage === 'apps' ? (
         <AppsPage searchTerm={searchTerm} />
       ) : (

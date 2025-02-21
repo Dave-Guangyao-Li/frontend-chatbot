@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Paper, TextField, IconButton, Typography, Box, styled } from '@mui/material';
+import { Paper, TextField, IconButton, Typography, Box, styled, Button } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -13,11 +13,13 @@ const ChatWindowContainer = styled(Paper)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
+  zIndex: 2000,
   [theme.breakpoints.down('sm')]: {
     width: '100%',
     height: '100%',
     bottom: 0,
     right: 0,
+    zIndex: 2000,
   },
 }));
 
@@ -28,6 +30,8 @@ const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+  zIndex: 1001,
+  position: 'relative',
 }));
 
 const MessageContainer = styled(Box)({
@@ -54,6 +58,16 @@ const InputContainer = styled(Box)(({ theme }) => ({
   borderTop: '1px solid #e0e0e0',
   display: 'flex',
   gap: theme.spacing(1),
+  backgroundColor: 'white',
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  backgroundColor: '#1976d2',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#1565c0',
+  },
+  borderRadius: '4px',
 }));
 
 interface Message {
@@ -129,12 +143,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
       <Header>
         <Typography variant="h6">{timer}s</Typography>
         <Box>
-          <IconButton color="inherit" onClick={handleReset} size="small">
-            <RefreshIcon />
-          </IconButton>
-          <IconButton color="inherit" onClick={onClose} size="small">
-            <CloseIcon />
-          </IconButton>
+          <StyledButton onClick={handleReset} size="small">
+            Reset
+          </StyledButton>
+          <StyledButton onClick={onClose} size="small">
+            Close
+          </StyledButton>
         </Box>
       </Header>
       <MessageContainer ref={messageContainerRef}>
@@ -156,9 +170,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
           onKeyPress={handleKeyPress}
           size="small"
         />
-        <IconButton color="primary" onClick={handleSend} disabled={!inputValue.trim()}>
-          <SendIcon />
-        </IconButton>
+        <StyledButton color="primary" onClick={handleSend} disabled={!inputValue.trim()}>
+          Send
+        </StyledButton>
       </InputContainer>
     </ChatWindowContainer>
   );
