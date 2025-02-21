@@ -7,6 +7,7 @@ A responsive React TypeScript application featuring a chatbot interface, navigat
 - Responsive design for both desktop and mobile
 - Navigation bar with logo and search functionality
 - Side menu with Apps and Documents sections
+- **Toggle button** for the side menu, allowing users to expand or collapse it on smaller screens
 - Real-time search with text highlighting
 - Chatbot interface with:
   - Timer display
