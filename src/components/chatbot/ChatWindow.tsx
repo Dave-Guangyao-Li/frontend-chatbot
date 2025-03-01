@@ -1,22 +1,33 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Paper, TextField, IconButton, Typography, Box, styled, Button } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import CloseIcon from '@mui/icons-material/Close';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Paper,
+  TextField,
+  IconButton,
+  Typography,
+  Box,
+  styled,
+  Button,
+} from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import CloseIcon from "@mui/icons-material/Close";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const ChatWindowContainer = styled(Paper)(({ theme }) => ({
-  position: 'fixed',
-  bottom: '80px',
-  right: '20px',
-  width: '400px',
-  height: '600px',
-  display: 'flex',
-  flexDirection: 'column',
-  overflow: 'hidden',
+  position: "fixed",
+  bottom: "80px",
+  right: "20px",
+  width: "400px",
+  height: "600px",
+  display: "flex",
+  flexDirection: "column",
+  overflow: "hidden",
   zIndex: 2000,
-  [theme.breakpoints.down('sm')]: {
-    width: '100%',
-    height: '100%',
+  [theme.breakpoints.down("sm")]: {
+    width: "100%",
+    height: "100%",
     bottom: 0,
     right: 0,
     zIndex: 2000,
@@ -25,49 +36,52 @@ const ChatWindowContainer = styled(Paper)(({ theme }) => ({
 
 const Header = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
-  backgroundColor: '#1976d2',
-  color: 'white',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
+  backgroundColor: "#1976d2",
+  color: "white",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+
   zIndex: 1001,
-  position: 'relative',
+  position: "relative",
 }));
 
 const MessageContainer = styled(Box)({
   flex: 1,
-  overflowY: 'auto',
-  padding: '16px',
+  overflowY: "auto",
+  padding: "16px",
 });
 
 const Message = styled(Box)<{ isUser?: boolean }>(({ isUser }) => ({
-  display: 'flex',
-  justifyContent: isUser ? 'flex-end' : 'flex-start',
-  marginBottom: '8px',
+  display: "flex",
+  justifyContent: isUser ? "flex-end" : "flex-start",
+  marginBottom: "8px",
 }));
 
-const MessageContent = styled(Paper)<{ isUser?: boolean }>(({ isUser, theme }) => ({
-  padding: theme.spacing(1, 2),
-  maxWidth: '70%',
-  backgroundColor: isUser ? '#1976d2' : '#f5f5f5',
-  color: isUser ? 'white' : 'inherit',
-}));
+const MessageContent = styled(Paper)<{ isUser?: boolean }>(
+  ({ isUser, theme }) => ({
+    padding: theme.spacing(1, 2),
+    maxWidth: "70%",
+    backgroundColor: isUser ? "#1976d2" : "#f5f5f5",
+    color: isUser ? "white" : "inherit",
+  })
+);
 
 const InputContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
-  borderTop: '1px solid #e0e0e0',
-  display: 'flex',
+  borderTop: "1px solid #e0e0e0",
+  display: "flex",
   gap: theme.spacing(1),
-  backgroundColor: 'white',
+  backgroundColor: "white",
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  backgroundColor: '#1976d2',
-  color: 'white',
-  '&:hover': {
-    backgroundColor: '#1565c0',
+  backgroundColor: "#1976d2",
+  color: "white",
+  "&:hover": {
+    backgroundColor: "#1565c0",
   },
-  borderRadius: '4px',
+  borderRadius: "4px",
 }));
 
 interface Message {
@@ -82,7 +96,7 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [timer, setTimer] = useState(0);
   const messageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +110,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
 
   const scrollToBottom = () => {
     if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
     }
   };
 
@@ -112,13 +127,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
         isUser: true,
       };
       setMessages((prev) => [...prev, newMessage]);
-      setInputValue('');
+      setInputValue("");
 
-      // Simulate bot response
+      // Simulate bot response with Markdown
       setTimeout(() => {
         const botResponse: Message = {
           id: Date.now() + 1,
-          text: "I'm here to help!",
+          text: `
+# I'm here to help! 
+## What can I help you with?
+Here are some links you might find useful:
+- [Google](https://www.google.com)
+- [React Documentation](https://reactjs.org)
+![Placeholder Image](https://placehold.co/100x100)
+          `,
           isUser: false,
         };
         setMessages((prev) => [...prev, botResponse]);
@@ -132,10 +154,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       handleSend();
     }
+  };
+
+  const preprocessMarkdown = (text: string) => {
+    // Normalize newlines
+    return text
+      .replace(/\r\n/g, "\n") // Convert Windows newlines to Unix
+      .replace(/\n{2,}/g, "\n\n") // Ensure double newlines for paragraphs
+      .trim(); // Remove leading/trailing whitespace
   };
 
   return (
@@ -155,7 +185,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
         {messages.map((message) => (
           <Message key={message.id} isUser={message.isUser}>
             <MessageContent isUser={message.isUser} elevation={1}>
-              <Typography>{message.text}</Typography>
+              {message.isUser ? (
+                <Typography>{message.text}</Typography>
+              ) : (
+                <>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {preprocessMarkdown(message.text)}
+                  </ReactMarkdown>
+                </>
+              )}
             </MessageContent>
           </Message>
         ))}
@@ -170,7 +211,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
           onKeyPress={handleKeyPress}
           size="small"
         />
-        <StyledButton color="primary" onClick={handleSend} disabled={!inputValue.trim()}>
+        <StyledButton
+          color="primary"
+          onClick={handleSend}
+          disabled={!inputValue.trim()}
+        >
           Send
         </StyledButton>
       </InputContainer>
@@ -178,4 +223,4 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onClose }) => {
   );
 };
 
-export default ChatWindow; 
+export default ChatWindow;
